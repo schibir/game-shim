@@ -107,10 +107,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
         getter = (function() {
             // These are the functions that match the spec, and should be preferred
             if("webkitIsFullScreen" in document) {
-                return function() { return document.webkitFullscreenEnabled; };
+                return function() { return document.webkitIsFullScreen; };
             }
-            if("mozFullScreenEnabled" in document) {
-                return function() { return document.mozFullScreenEnabled; };
+            if("mozFullScreen" in document) {
+                return function() { return document.mozFullScreen; };
+            }
+            if("msFullscreenEnabled" in document) {
+                return function() { return document.msFullscreenEnabled; };
             }
 
             GameShim.supports.fullscreen = false;
@@ -126,7 +129,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
     if(!document.hasOwnProperty("fullscreenElement")) {
         getter = (function() {
             // These are the functions that match the spec, and should be preferred
-            var i=0, name=["webkitCurrentFullScreenElement", "webkitFullscreenElement", "mozFullScreenElement"];
+            var i=0, name=["webkitCurrentFullScreenElement", "webkitFullscreenElement", "mozFullScreenElement", "msFullscreenElement"];
             for (; i<name.length; i++)
             {
                 if (name[i] in document)
@@ -152,6 +155,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
     }
     document.addEventListener("webkitfullscreenchange", fullscreenchange, false);
     document.addEventListener("mozfullscreenchange", fullscreenchange, false);
+    document.addEventListener("onmsfullscreenchange", fullscreenchange, false);
     
     // Document event: fullscreenerror
     function fullscreenerror(oldEvent) {
@@ -162,6 +166,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
     }
     document.addEventListener("webkitfullscreenerror", fullscreenerror, false);
     document.addEventListener("mozfullscreenerror", fullscreenerror, false);
+    document.addEventListener("onmsfullscreenerror", fullscreenerror, false);
     
     // element.requestFullScreen
     if(!elementPrototype.requestFullScreen) {
@@ -175,6 +180,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
             if(elementPrototype.mozRequestFullScreen) {
                 return function() {
                     this.mozRequestFullScreen();
+                };
+            }
+            
+            if(elementPrototype.msRequestFullscreen) {
+                return function() {
+                    this.msRequestFullscreen();
                 };
             }
             
